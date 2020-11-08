@@ -1,8 +1,9 @@
 import React from "react";
 import Weather from "./components/Weather";
-// import Location from "./components/Location";
+
 require("dotenv").config();
 
+console.log(process.env);
 function App() {
     return (
         <main className="md:w-1/2 sm:w-full bg-white m-auto h-auto">
