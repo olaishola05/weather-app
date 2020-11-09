@@ -3,7 +3,6 @@ import Weather from "./components/Weather";
 
 require("dotenv").config();
 
-console.log(process.env);
 function App() {
     return (
         <main className="md:w-1/2 sm:w-full bg-white m-auto h-auto">
