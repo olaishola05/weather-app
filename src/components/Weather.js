@@ -30,7 +30,8 @@ function Weather() {
                 error,
                 fetchWeather,
                 handleSubmit,
-                weatherQuery
+                weatherQuery,
+                weatherForecast
             );
         }
     }
@@ -76,10 +77,56 @@ function Weather() {
                     setCity(city);
                 })
                 .catch((error) => console.log(error));
-            setCity("");
             setQuery("");
         }
     };
+
+    const weatherForecast = (lon, lat, query) => {
+        const forecastUrl = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid={API_KEY}`;
+        const cityForecast = `http://api.openweathermap.org/data/2.5/forecast?q=${query}&appid=${API_KEY}`;
+        if (lon && lat) {
+            fetch(forecastUrl)
+                .then((resp) => {
+                    if (
+                        resp.status >= 200 &&
+                        resp.status <= 299
+                    ) {
+                        return resp.json();
+                    } else {
+                        setIsLoading(false);
+                        setIsError(true);
+                        throw new Error(resp.statusText);
+                    }
+                })
+                .then((city) => {
+                    console.log("my city info :", city);
+                    setIsLoading(false);
+                    setCity(city);
+                })
+                .catch((error) => console.log(error));
+        } else if (query) {
+            fetch(cityForecast)
+                .then((resp) => {
+                    if (
+                        resp.status >= 200 &&
+                        resp.status <= 299
+                    ) {
+                        return resp.json();
+                    } else {
+                        setIsLoading(false);
+                        setIsError(true);
+                        throw new Error(resp.statusText);
+                    }
+                })
+                .then((city) => {
+                    console.log("my city info :", city);
+                    setIsLoading(false);
+                    setCity(city);
+                })
+                .catch((error) => console.log(error));
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         weatherQuery(query);
@@ -146,6 +193,10 @@ function Weather() {
                         Degree: {city.wind.deg} <sup>o</sup>
                     </h3>
                 </div>
+            </section>
+
+            <section>
+                <h1>5 Days weather forecast</h1>
             </section>
         </>
     );
