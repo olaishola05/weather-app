@@ -3,7 +3,8 @@ import React, { useState, useEffect } from "react";
 const API_KEY = process.env.REACT_APP_API_KEY;
 
 function Weather() {
-    const [location, setLocation] = useState([]);
+    const [city, setCity] = useState("");
+    const [query, setQuery] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
 
@@ -23,12 +24,13 @@ function Weather() {
                 "Geolocation is not supported by your browser"
             );
         } else {
-            alert("Geolocation supported");
+            console.log("Geolocation supported");
             navigator.geolocation.getCurrentPosition(
                 showLocation,
                 error,
                 fetchWeather,
-                handleSubmit
+                handleSubmit,
+                weatherQuery
             );
         }
     }
@@ -45,32 +47,16 @@ function Weather() {
                     throw new Error(resp.statusText);
                 }
             })
-            .then((location) => {
-                console.log(location);
-                const { name } = location;
-                const { country } = location.sys;
-                const {
-                    temp,
-                    temp_min,
-                    temp_max,
-                    feels_like,
-                    humidity,
-                } = location.main;
-                const {
-                    description,
-                    icon,
-                } = location.weather[0];
-                const { speed, deg } = location.wind;
-                setLocation(location);
+            .then((city) => {
+                console.log(city);
+                setCity(city);
                 setIsLoading(false);
             })
             .catch((error) => console.log(error));
     };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const location_url = `http://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${API_KEY}`;
-        if (location) {
+    const weatherQuery = (query) => {
+        const location_url = `http://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${API_KEY}`;
+        if (query) {
             fetch(location_url)
                 .then((resp) => {
                     if (
@@ -84,28 +70,19 @@ function Weather() {
                         throw new Error(resp.statusText);
                     }
                 })
-                .then((location) => {
-                    console.log(location);
-                    const { name } = location;
-                    const { country } = location.sys;
-                    const {
-                        temp,
-                        temp_min,
-                        temp_max,
-                        feels_like,
-                        humidity,
-                    } = location.main;
-                    const {
-                        description,
-                        icon,
-                    } = location.weather[0];
-                    const { speed, deg } = location.wind;
-                    setLocation(location);
+                .then((city) => {
+                    console.log(city);
                     setIsLoading(false);
+                    setCity(city);
                 })
                 .catch((error) => console.log(error));
+            setCity("");
+            setQuery("");
         }
-        setLocation("");
+    };
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        weatherQuery(query);
     };
 
     useEffect(() => {
@@ -113,11 +90,11 @@ function Weather() {
     }, []);
 
     if (isError) {
-        return <div>error loading</div>;
+        return <div>Error...</div>;
     }
 
     if (isLoading) {
-        return <div>Loading</div>;
+        return <div>Loading...</div>;
     }
     return (
         <>
@@ -134,11 +111,11 @@ function Weather() {
                     </label>
                     <input
                         type="text"
-                        id="location"
-                        name="location"
-                        value={location}
+                        id="city"
+                        name="city"
+                        value={query}
                         onChange={(e) =>
-                            setLocation(e.target.value)
+                            setQuery(e.target.value)
                         }
                         className="w-56"
                         placeholder="Enter Location"
@@ -151,11 +128,23 @@ function Weather() {
                 <hr />
 
                 <div className="flex-col bg-white h-auto rounded mx-4 my-5 border-none">
-                    <h1>{location.name}</h1>
-                    {/* <h2>{city.main.humidity}</h2>
-                    <h3>{city.weather.description}</h3>
-                    <h3>{city.wind.deg}</h3>
-                    <img src={city.icon} alt="" /> */}
+                    <h1>
+                        {city.name}, {city.sys.country}
+                    </h1>
+                    <h2>
+                        Weather feels like:{" "}
+                        {city.main.feels_like}
+                    </h2>
+                    <h2>Humidity {city.main.humidity}</h2>
+
+                    <p>
+                        Description:{" "}
+                        {city.weather[0].description}
+                    </p>
+
+                    <h3>
+                        Degree: {city.wind.deg} <sup>o</sup>
+                    </h3>
                 </div>
             </section>
         </>
