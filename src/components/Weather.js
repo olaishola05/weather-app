@@ -13,6 +13,10 @@ function Weather() {
             position.coords.latitude,
             position.coords.longitude
         );
+        weatherForecast(
+            position.coords.latitude,
+            position.coords.longitude
+        );
     }
 
     const error = () => {
@@ -56,7 +60,7 @@ function Weather() {
             .catch((error) => console.log(error));
     };
     const weatherQuery = (query) => {
-        const location_url = `http://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${API_KEY}`;
+        const location_url = `http://api.openweathermap.org/data/2.5/weather?q=${query}&units=metric&appid=${API_KEY}`;
         if (query) {
             fetch(location_url)
                 .then((resp) => {
@@ -81,9 +85,9 @@ function Weather() {
         }
     };
 
-    const weatherForecast = (lon, lat, query) => {
-        const forecastUrl = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid={API_KEY}`;
-        const cityForecast = `http://api.openweathermap.org/data/2.5/forecast?q=${query}&appid=${API_KEY}`;
+    const weatherForecast = (lon, lat) => {
+        const forecastUrl = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+
         if (lon && lat) {
             fetch(forecastUrl)
                 .then((resp) => {
@@ -101,10 +105,15 @@ function Weather() {
                 .then((city) => {
                     console.log("my city info :", city);
                     setIsLoading(false);
-                    setCity(city);
+                    // setCity(city);
                 })
                 .catch((error) => console.log(error));
-        } else if (query) {
+        }
+    };
+
+    const queryForecast = (query) => {
+        const cityForecast = `http://api.openweathermap.org/data/2.5/forecast?q=${query}&units=metric&appid=${API_KEY}`;
+        if (query) {
             fetch(cityForecast)
                 .then((resp) => {
                     if (
@@ -119,9 +128,8 @@ function Weather() {
                     }
                 })
                 .then((city) => {
-                    console.log("my city info :", city);
+                    console.log("my query info :", city);
                     setIsLoading(false);
-                    setCity(city);
                 })
                 .catch((error) => console.log(error));
         }
@@ -130,6 +138,7 @@ function Weather() {
     const handleSubmit = (e) => {
         e.preventDefault();
         weatherQuery(query);
+        queryForecast(query);
     };
 
     useEffect(() => {
@@ -145,59 +154,71 @@ function Weather() {
     }
     return (
         <>
-            <section className="bg-blue-100 m-3">
-                <form
-                    className="w-3/4 m-auto"
-                    onSubmit={handleSubmit}
-                >
-                    <label
-                        htmlFor="location"
-                        className="p-3 text-gray-900 font-bold "
+            <main className="w-full bg-white">
+                <header>
+                    <form
+                        className="w.w-screen m-auto my-4"
+                        onSubmit={handleSubmit}
                     >
-                        Enter City:
-                    </label>
-                    <input
-                        type="text"
-                        id="city"
-                        name="city"
-                        value={query}
-                        onChange={(e) =>
-                            setQuery(e.target.value)
-                        }
-                        className="w-56"
-                        placeholder="Enter Location"
-                    />
+                        <label
+                            htmlFor="location"
+                            className="p-3 text-gray-900 font-bold "
+                        >
+                            Enter City:
+                        </label>
+                        <input
+                            type="text"
+                            id="city"
+                            name="city"
+                            value={query}
+                            onChange={(e) =>
+                                setQuery(e.target.value)
+                            }
+                            className="w-6/12 py-2 px-2"
+                            placeholder="Enter Location"
+                        />
 
-                    <button className="bg-blue-500 font-bold text-white py-2 px-4 rounded mx-4 my-4">
-                        Search
-                    </button>
-                </form>
-                <hr />
+                        <button className="bg-blue-500 font-bold text-white py-2 px-4 rounded mx-4 my-4">
+                            Search
+                        </button>
+                    </form>
+                    <hr />
+                </header>
+                <article className="flex flex-row m-2">
+                    <section className="bg-blue-100 mx-6 border-2 border-gray-600">
+                        <div className="flex-col  rounded mx-4 my-5 border-none">
+                            <h1>
+                                {city.name}, {city.sys.country}
+                            </h1>
+                            <h2>
+                                Weather feels like:{" "}
+                                {city.main.feels_like}
+                            </h2>
+                            <h2>
+                                Humidity {city.main.humidity}
+                            </h2>
 
-                <div className="flex-col bg-white h-auto rounded mx-4 my-5 border-none">
-                    <h1>
-                        {city.name}, {city.sys.country}
-                    </h1>
-                    <h2>
-                        Weather feels like:{" "}
-                        {city.main.feels_like}
-                    </h2>
-                    <h2>Humidity {city.main.humidity}</h2>
+                            <p>
+                                Description:{" "}
+                                {city.weather[0].description}
+                            </p>
 
-                    <p>
-                        Description:{" "}
-                        {city.weather[0].description}
-                    </p>
+                            <h3>
+                                Degree: {city.wind.deg}{" "}
+                                <sup>o</sup>
+                            </h3>
+                        </div>
+                    </section>
 
-                    <h3>
-                        Degree: {city.wind.deg} <sup>o</sup>
-                    </h3>
-                </div>
-            </section>
-
-            <section>
-                <h1>5 Days weather forecast</h1>
-            </section>
+                    <section className="border-2 border-gray-600 px-3 py-3 w-4/6">
+                        <h1>city: {city.name}</h1>
+                        <p>
+                            Description:{" "}
+                            {city.weather[0].description}
+                        </p>
+                    </section>
+                </article>
+            </main>
         </>
     );
 }
