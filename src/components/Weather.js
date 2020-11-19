@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Location from "./Location";
 
 const API_KEY = process.env.REACT_APP_API_KEY;
 
@@ -7,6 +8,7 @@ function Weather() {
     const [query, setQuery] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
+    const [dailyForecasts, setDailyForecasts] = useState("");
 
     function showLocation(position) {
         fetchWeather(
@@ -105,7 +107,6 @@ function Weather() {
                 .then((city) => {
                     console.log("my city info :", city);
                     setIsLoading(false);
-                    // setCity(city);
                 })
                 .catch((error) => console.log(error));
         }
@@ -127,12 +128,27 @@ function Weather() {
                         throw new Error(resp.statusText);
                     }
                 })
-                .then((city) => {
-                    console.log("my query info :", city);
+                .then((dailyForecasts) => {
+                    const days = dailyForecasts.list.filter(
+                        (daily) =>
+                            daily.dt_txt.includes("18:00:00")
+                    );
+                    setDailyForecasts(days);
+                    console.log(days);
                     setIsLoading(false);
                 })
                 .catch((error) => console.log(error));
         }
+    };
+
+    const dailyFormats = () => {
+        // days.map((dailyReading, index) => (
+        //     <Location
+        //         dailyForecasts={dailyReading}
+        //         key={index}
+        //     />
+        // ));
+        console.log("hi");
     };
 
     const handleSubmit = (e) => {
@@ -143,6 +159,7 @@ function Weather() {
 
     useEffect(() => {
         getLocation();
+        // dailyFormats();
     }, []);
 
     if (isError) {
@@ -211,11 +228,8 @@ function Weather() {
                     </section>
 
                     <section className="border-2 border-gray-600 px-3 py-3 w-4/6">
-                        <h1>city: {city.name}</h1>
-                        <p>
-                            Description:{" "}
-                            {city.weather[0].description}
-                        </p>
+                        <h1>city: Hi </h1>
+                        {dailyFormats()}
                     </section>
                 </article>
             </main>
