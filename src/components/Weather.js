@@ -38,6 +38,7 @@ function Weather() {
                 handleSubmit,
                 weatherQuery,
                 weatherForecast
+                // queryForecast
             );
         }
     }
@@ -107,6 +108,7 @@ function Weather() {
                 .then((city) => {
                     console.log("my city info :", city);
                     setIsLoading(false);
+                    // setCity(city);
                 })
                 .catch((error) => console.log(error));
         }
@@ -128,29 +130,22 @@ function Weather() {
                         throw new Error(resp.statusText);
                     }
                 })
-                .then((dailyForecasts) => {
-                    const days = dailyForecasts.list.filter(
+                .then((days) => {
+                    const fiveDaysForecast = days.list.filter(
                         (daily) =>
                             daily.dt_txt.includes("18:00:00")
                     );
-                    setDailyForecasts(days);
-                    console.log(days);
+                    setDailyForecasts(fiveDaysForecast);
+                    console.log(fiveDaysForecast);
                     setIsLoading(false);
                 })
                 .catch((error) => console.log(error));
         }
     };
 
-    const dailyFormats = () => {
-        // days.map((dailyReading, index) => (
-        //     <Location
-        //         dailyForecasts={dailyReading}
-        //         key={index}
-        //     />
-        // ));
-        console.log("hi");
+    const locationForecast = () => {
+        return null;
     };
-
     const handleSubmit = (e) => {
         e.preventDefault();
         weatherQuery(query);
@@ -159,7 +154,6 @@ function Weather() {
 
     useEffect(() => {
         getLocation();
-        // dailyFormats();
     }, []);
 
     if (isError) {
@@ -229,7 +223,12 @@ function Weather() {
 
                     <section className="border-2 border-gray-600 px-3 py-3 w-4/6">
                         <h1>city: Hi </h1>
-                        {dailyFormats()}
+                        {console.log(
+                            "im forecast weather: ",
+                            typeof dailyForecasts
+                        )}
+
+                        <h1>{dailyForecasts.main.temp}</h1>
                     </section>
                 </article>
             </main>
