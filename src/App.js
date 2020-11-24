@@ -1,16 +1,19 @@
-import React from "react";
+import React, { Fragment } from "react";
 import Weather from "./components/Weather";
 
 require("dotenv").config();
 
 function App() {
+    const headerStyle = {
+        textAlign: "center",
+        marginTop: "20px",
+        marginBottom: "20px",
+    };
     return (
-        <main className="md:w-1/2 sm:w-full bg-white m-auto h-auto">
-            <h1 className="text-center mt-4 text-xl font-bold">
-                Weather App
-            </h1>
+        <Fragment>
+            <h1 style={headerStyle}>Weather App</h1>
             <Weather />
-        </main>
+        </Fragment>
     );
 }
 

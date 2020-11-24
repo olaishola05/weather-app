@@ -1,0 +1,34 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+main {
+    border: 1px solid teal;
+    width: 85%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+section {
+    border: 1px solid gray;
+}
+
+.input-width {
+    width: 100%;
+}
+
+.form-container {
+    display: flex;
+    /* border: 1px solid black; */
+    padding: 10px;
+    justify-content: center;
+    align-content: center;
+}
+
+.btn {
+    padding: 10px;
+    height: 50px;
+    width: 100px;
+}

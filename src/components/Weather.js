@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Location from "./Location";
+import {
+    Button,
+    Container,
+    Row,
+    Col,
+    Form,
+} from "react-bootstrap";
 
 const API_KEY = process.env.REACT_APP_API_KEY;
 
@@ -135,7 +142,9 @@ function Weather() {
                         (daily) =>
                             daily.dt_txt.includes("18:00:00")
                     );
+
                     setDailyForecasts(fiveDaysForecast);
+
                     console.log(fiveDaysForecast);
                     setIsLoading(false);
                 })
@@ -143,9 +152,7 @@ function Weather() {
         }
     };
 
-    const locationForecast = () => {
-        return null;
-    };
+    const locationForecast = () => {};
     const handleSubmit = (e) => {
         e.preventDefault();
         weatherQuery(query);
@@ -165,72 +172,95 @@ function Weather() {
     }
     return (
         <>
-            <main className="w-full bg-white">
-                <header>
-                    <form
-                        className="w.w-screen m-auto my-4"
+            <main className="">
+                <Container>
+                    <Form
+                        className="mb-3 form-container"
                         onSubmit={handleSubmit}
                     >
-                        <label
-                            htmlFor="location"
-                            className="p-3 text-gray-900 font-bold "
+                        <Form.Group
+                            as={Row}
+                            controlId="formBasicText"
                         >
-                            Enter City:
-                        </label>
-                        <input
-                            type="text"
-                            id="city"
-                            name="city"
-                            value={query}
-                            onChange={(e) =>
-                                setQuery(e.target.value)
-                            }
-                            className="w-6/12 py-2 px-2"
-                            placeholder="Enter Location"
-                        />
-
-                        <button className="bg-blue-500 font-bold text-white py-2 px-4 rounded mx-4 my-4">
+                            <Form.Label
+                                htmlFor="location"
+                                className=""
+                            >
+                                Enter City:
+                            </Form.Label>
+                            <Col sm={10}>
+                                <Form.Control
+                                    className="input-width"
+                                    type="text"
+                                    id="city"
+                                    name="city"
+                                    value={query}
+                                    onChange={(e) =>
+                                        setQuery(e.target.value)
+                                    }
+                                    placeholder="Enter
+                                Location"
+                                ></Form.Control>
+                            </Col>
+                            <Form.Text className="text-muted text-center">
+                                Search for your preferred weather
+                                location
+                            </Form.Text>
+                        </Form.Group>
+                        <Button
+                            variant="primary"
+                            type="submit"
+                            className="btn"
+                        >
                             Search
-                        </button>
-                    </form>
-                    <hr />
-                </header>
-                <article className="flex flex-row m-2">
-                    <section className="bg-blue-100 mx-6 border-2 border-gray-600">
-                        <div className="flex-col  rounded mx-4 my-5 border-none">
-                            <h1>
-                                {city.name}, {city.sys.country}
-                            </h1>
-                            <h2>
-                                Weather feels like:{" "}
-                                {city.main.feels_like}
-                            </h2>
-                            <h2>
-                                Humidity {city.main.humidity}
-                            </h2>
+                        </Button>
+                    </Form>
+                </Container>
+                <Container>
+                    <Row>
+                        <Col>
+                            <section className="">
+                                <div className="">
+                                    <h1>
+                                        {city.name},{" "}
+                                        {city.sys.country}
+                                    </h1>
+                                    <h2>
+                                        Weather feels like:{" "}
+                                        {city.main.feels_like}
+                                    </h2>
+                                    <h2>
+                                        Humidity{" "}
+                                        {city.main.humidity}
+                                    </h2>
 
-                            <p>
-                                Description:{" "}
-                                {city.weather[0].description}
-                            </p>
+                                    <p>
+                                        Description:{" "}
+                                        {
+                                            city.weather[0]
+                                                .description
+                                        }
+                                    </p>
 
-                            <h3>
-                                Degree: {city.wind.deg}{" "}
-                                <sup>o</sup>
-                            </h3>
-                        </div>
-                    </section>
+                                    <h3>
+                                        Degree: {city.wind.deg}{" "}
+                                        <sup>o</sup>
+                                    </h3>
+                                </div>
+                            </section>
+                        </Col>
 
-                    <section className="border-2 border-gray-600 px-3 py-3 w-4/6">
-                        <h1>city: Hi </h1>
-                        {console.log(
-                            "im forecast weather: ",
-                            typeof dailyForecasts
-                        )}
-
-                        <h1>{dailyForecasts.main.temp}</h1>
-                    </section>
-                </article>
+                        <Col>
+                            <section className="">
+                                <h1>city: Hi </h1>
+                                {console.log(
+                                    "im forecast weather: ",
+                                    typeof dailyForecasts
+                                )}
+                            </section>
+                        </Col>
+                    </Row>
+                </Container>
             </main>
         </>
     );
