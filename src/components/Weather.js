@@ -7,6 +7,7 @@ import {
     Col,
     Form,
 } from "react-bootstrap";
+import WeatherData from "./WeatherData";
 
 const API_KEY = process.env.REACT_APP_API_KEY;
 
@@ -15,9 +16,15 @@ function Weather() {
     const [query, setQuery] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
-    const [dailyForecasts, setDailyForecasts] = useState("");
+    const [dailyForecasts, setDailyForecasts] = useState([]);
+    // const [weatherData, setWeatherData] = useState([]);
+
+    useEffect(() => {
+        getLocation();
+    }, []);
 
     function showLocation(position) {
+        console.log(position);
         fetchWeather(
             position.coords.latitude,
             position.coords.longitude
@@ -40,12 +47,10 @@ function Weather() {
             console.log("Geolocation supported");
             navigator.geolocation.getCurrentPosition(
                 showLocation,
-                error,
                 fetchWeather,
+                error,
                 handleSubmit,
-                weatherQuery,
-                weatherForecast
-                // queryForecast
+                weatherQuery
             );
         }
     }
@@ -64,7 +69,34 @@ function Weather() {
             })
             .then((city) => {
                 console.log(city);
-                setCity(city);
+                const { name } = city;
+                const { country } = city.sys;
+                const {
+                    temp,
+                    temp_min,
+                    temp_max,
+                    feels_like,
+                    humidity,
+                } = city.main;
+                const { description, icon } = city.weather[0];
+                const { speed, deg } = city.wind;
+
+                const data = {
+                    name,
+                    country,
+                    description,
+                    icon,
+                    temp: temp.toFixed(1),
+                    feels_like: feels_like.toFixed(1),
+                    temp_min: temp_min.toFixed(1),
+                    temp_max: temp_max.toFixed(1),
+                    speed,
+                    deg,
+                    humidity,
+                };
+                // console.log(data);
+                setCity(data);
+                // setWeatherData(data);
                 setIsLoading(false);
             })
             .catch((error) => console.log(error));
@@ -96,6 +128,7 @@ function Weather() {
     };
 
     const weatherForecast = (lon, lat) => {
+        console.log({ lon, lat });
         const forecastUrl = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
 
         if (lon && lat) {
@@ -112,8 +145,8 @@ function Weather() {
                         throw new Error(resp.statusText);
                     }
                 })
-                .then((city) => {
-                    console.log("my city info :", city);
+                .then((result) => {
+                    console.log("my city info :", result);
                     setIsLoading(false);
                     // setCity(city);
                 })
@@ -152,16 +185,16 @@ function Weather() {
         }
     };
 
-    const locationForecast = () => {};
+    // const locationForecast = () => {};
     const handleSubmit = (e) => {
         e.preventDefault();
         weatherQuery(query);
         queryForecast(query);
     };
 
-    useEffect(() => {
-        getLocation();
-    }, []);
+    const fiveDays = dailyForecasts.map((data, index) => (
+        <Location location={data.dt_txt} key={index} />
+    ));
 
     if (isError) {
         return <div>Error...</div>;
@@ -190,6 +223,7 @@ function Weather() {
                             </Form.Label>
                             <Col sm={10}>
                                 <Form.Control
+                                    controlId
                                     className="input-width"
                                     type="text"
                                     id="city"
@@ -219,44 +253,16 @@ function Weather() {
                 <Container>
                     <Row>
                         <Col>
-                            <section className="">
-                                <div className="">
-                                    <h1>
-                                        {city.name},{" "}
-                                        {city.sys.country}
-                                    </h1>
-                                    <h2>
-                                        Weather feels like:{" "}
-                                        {city.main.feels_like}
-                                    </h2>
-                                    <h2>
-                                        Humidity{" "}
-                                        {city.main.humidity}
-                                    </h2>
-
-                                    <p>
-                                        Description:{" "}
-                                        {
-                                            city.weather[0]
-                                                .description
-                                        }
-                                    </p>
-
-                                    <h3>
-                                        Degree: {city.wind.deg}{" "}
-                                        <sup>o</sup>
-                                    </h3>
-                                </div>
-                            </section>
+                            <WeatherData
+                                data={city}
+                                handleSubmit={handleSubmit}
+                            />
                         </Col>
 
                         <Col>
                             <section className="">
                                 <h1>city: Hi </h1>
-                                {console.log(
-                                    "im forecast weather: ",
-                                    typeof dailyForecasts
-                                )}
+                                {fiveDays}
                             </section>
                         </Col>
                     </Row>
