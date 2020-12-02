@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Location from "./Location";
-import {
-    Button,
-    Container,
-    Row,
-    Col,
-    Form,
-} from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import WeatherData from "./WeatherData";
+import FormContainer from "./FormContainer";
 
 const API_KEY = process.env.REACT_APP_API_KEY;
 
@@ -94,9 +89,7 @@ function Weather() {
                     deg,
                     humidity,
                 };
-                // console.log(data);
                 setCity(data);
-                // setWeatherData(data);
                 setIsLoading(false);
             })
             .catch((error) => console.log(error));
@@ -118,9 +111,36 @@ function Weather() {
                     }
                 })
                 .then((city) => {
-                    console.log(city);
+                    const { name } = city;
+                    const { country } = city.sys;
+                    const {
+                        temp,
+                        temp_min,
+                        temp_max,
+                        feels_like,
+                        humidity,
+                    } = city.main;
+                    const {
+                        description,
+                        icon,
+                    } = city.weather[0];
+                    const { speed, deg } = city.wind;
+
+                    const data = {
+                        name,
+                        country,
+                        description,
+                        icon,
+                        temp: temp.toFixed(1),
+                        feels_like: feels_like.toFixed(1),
+                        temp_min: temp_min.toFixed(1),
+                        temp_max: temp_max.toFixed(1),
+                        speed,
+                        deg,
+                        humidity,
+                    };
+                    setCity(data);
                     setIsLoading(false);
-                    setCity(city);
                 })
                 .catch((error) => console.log(error));
             setQuery("");
@@ -185,7 +205,10 @@ function Weather() {
         }
     };
 
-    // const locationForecast = () => {};
+    const handleChange = (e) => {
+        setQuery(e.target.value);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         weatherQuery(query);
@@ -206,57 +229,19 @@ function Weather() {
     return (
         <>
             <main className="">
-                <Container>
-                    <Form
-                        className="mb-3 form-container"
-                        onSubmit={handleSubmit}
-                    >
-                        <Form.Group
-                            as={Row}
-                            controlId="formBasicText"
-                        >
-                            <Form.Label
-                                htmlFor="location"
-                                className=""
-                            >
-                                Enter City:
-                            </Form.Label>
-                            <Col sm={10}>
-                                <Form.Control
-                                    controlId
-                                    className="input-width"
-                                    type="text"
-                                    id="city"
-                                    name="city"
-                                    value={query}
-                                    onChange={(e) =>
-                                        setQuery(e.target.value)
-                                    }
-                                    placeholder="Enter
-                                Location"
-                                ></Form.Control>
-                            </Col>
-                            <Form.Text className="text-muted text-center">
-                                Search for your preferred weather
-                                location
-                            </Form.Text>
-                        </Form.Group>
-                        <Button
-                            variant="primary"
-                            type="submit"
-                            className="btn"
-                        >
-                            Search
-                        </Button>
-                    </Form>
-                </Container>
+                <Container />
+                <Row>
+                    <Col>
+                        <FormContainer
+                            handleSubmit={handleSubmit}
+                            handleChange={handleChange}
+                        />
+                    </Col>
+                </Row>
                 <Container>
                     <Row>
                         <Col>
-                            <WeatherData
-                                data={city}
-                                handleSubmit={handleSubmit}
-                            />
+                            <WeatherData data={city} />
                         </Col>
 
                         <Col>

@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
     WeatherDegree,
     Month,
@@ -6,7 +7,7 @@ import {
     Day,
 } from "../helpers/utils";
 
-function WeatherData({ data, handleSubmit }) {
+function WeatherData({ data }) {
     const {
         name,
         country,
